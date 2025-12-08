@@ -17,9 +17,8 @@ provider "aws" {
 variable "scp_target_id" {
     description = "Organization root/OU/account ID to attach the SCP to (e.g. r-xxxx or ou-xxxxx or 123456789012)"
     type        = string
-    # Khoi tech AWS Account ID
-    # default     = "899824927281" 
-    default = "854924711147"
+    # Visionary Writings AWS Account ID
+    default     = "724220526141"
 }
 
 variable "required_tag_keys" {
