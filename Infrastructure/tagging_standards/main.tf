@@ -1,95 +1,170 @@
 terraform {
-    required_version = ">= 1.0.0"
+  required_version = ">= 1.0.0"
 
-    required_providers {
-        aws = {
-            source  = "hashicorp/aws"
-            version = "~> 5.0"
-        }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
     }
+  }
 }
 
 provider "aws" {
-    region  = "af-south-1"
-    # profile = var.aws_profile
+  region = "af-south-1"
+  # profile = var.aws_profile
 }
 
-variable "scp_target_id" {
-    description = "Organization root/OU/account ID to attach the SCP to (e.g. r-xxxx or ou-xxxxx or 123456789012)"
-    type        = string
-    # Visionary Writings AWS Account ID
-    default     = "724220526141"
+locals {
+  required_tags_null_condition = {
+    Null = {
+      "aws:RequestTag/Name"        = "true"
+      "aws:RequestTag/Team"        = "true"
+      "aws:RequestTag/Environment" = "true"
+      "aws:RequestTag/Automation"  = "true"
+    }
+  }
 }
 
-variable "required_tag_keys" {
-    description = "List of tag keys required on resource-creating API calls"
-    type        = list(string)
-    default     = ["Name", "Team", "Environment", "Automation"]
-}
+resource "aws_iam_policy" "require_standard_tags_daily" {
+  name        = "Require-Standard-Tags-Daily"
+  description = "Require Name/Team/Environment/Automation tags for common daily services (separated statements, single policy)."
 
-# Service Control Policy enforcing that resource-creation APIs must include required tags.
-# Attach this policy to a root / OU / account via scp_target_id.
-resource "aws_organizations_policy" "tagging_standards" {
-  name        = "Require-Tags-SCP"
-  description = "Deny creation of resources when required tags are not provided"
-  type        = "SERVICE_CONTROL_POLICY"
-
-  content = jsonencode({
-    Version   = "2012-10-17"
+  policy = jsonencode({
+    Version = "2012-10-17",
     Statement = [
-      # Name
+      # ============================================================
+      # EC2: Require tags on INSTANCE creation only (avoid ENI pain)
+      # ============================================================
       {
-        Sid      = "DenyCreateWithoutNameTag"
-        Effect   = "Deny"
-        Action   = "*"
-        Resource = "*"
-        Condition = {
-          Null = {
-            "aws:RequestTag/Name" = "true"
-          }
-        }
+        Sid    = "EC2DenyRunInstancesWithoutRequiredTags"
+        Effect = "Deny"
+        Action = "ec2:RunInstances"
+        Resource = [
+          "arn:aws:ec2:*:*:instance/*"
+        ]
+        Condition = local.required_tags_null_condition
       },
-      # Team
+
+      # ============================================================
+      # EBS: Require tags when volumes/snapshots are created directly
+      # (Note: volumes created implicitly during RunInstances are NOT
+      # blocked by this, because we are not scoping RunInstances to volume/*)
+      # ============================================================
       {
-        Sid      = "DenyCreateWithoutTeamTag"
-        Effect   = "Deny"
-        Action   = "*"
-        Resource = "*"
-        Condition = {
-          Null = {
-            "aws:RequestTag/Team" = "true"
-          }
-        }
+        Sid    = "EC2DenyCreateVolumeWithoutRequiredTags"
+        Effect = "Deny"
+        Action = "ec2:CreateVolume"
+        Resource = [
+          "arn:aws:ec2:*:*:volume/*"
+        ]
+        Condition = local.required_tags_null_condition
       },
-      # Environment
       {
-        Sid      = "DenyCreateWithoutEnvironmentTag"
-        Effect   = "Deny"
-        Action   = "*"
-        Resource = "*"
-        Condition = {
-          Null = {
-            "aws:RequestTag/Environment" = "true"
-          }
-        }
+        Sid    = "EC2DenyCreateSnapshotWithoutRequiredTags"
+        Effect = "Deny"
+        Action = "ec2:CreateSnapshot"
+        Resource = [
+          "arn:aws:ec2:*:*:snapshot/*"
+        ]
+        Condition = local.required_tags_null_condition
       },
-      # Automation
+
+      # ============================================================
+      # RDS/Aurora: Require tags on DB instance/cluster create
+      # ============================================================
       {
-        Sid      = "DenyCreateWithoutAutomationTag"
-        Effect   = "Deny"
-        Action   = "*"
+        Sid    = "RDSDenyCreateDBInstanceWithoutRequiredTags"
+        Effect = "Deny"
+        Action = "rds:CreateDBInstance"
+        Resource = [
+          "arn:aws:rds:*:*:db:*"
+        ]
+        Condition = local.required_tags_null_condition
+      },
+      {
+        Sid    = "RDSDenyCreateDBClusterWithoutRequiredTags"
+        Effect = "Deny"
+        Action = "rds:CreateDBCluster"
+        Resource = [
+          "arn:aws:rds:*:*:cluster:*"
+        ]
+        Condition = local.required_tags_null_condition
+      },
+
+      # ============================================================
+      # Lambda: Require tags on function create
+      # ============================================================
+      {
+        Sid    = "LambdaDenyCreateFunctionWithoutRequiredTags"
+        Effect = "Deny"
+        Action = "lambda:CreateFunction"
+        Resource = [
+          "arn:aws:lambda:*:*:function:*"
+        ]
+        Condition = local.required_tags_null_condition
+      },
+
+      # ============================================================
+      # ECR: Require tags on repo create
+      # ============================================================
+      {
+        Sid    = "ECRDenyCreateRepositoryWithoutRequiredTags"
+        Effect = "Deny"
+        Action = "ecr:CreateRepository"
         Resource = "*"
-        Condition = {
-          Null = {
-            "aws:RequestTag/Automation" = "true"
-          }
-        }
+        Condition = local.required_tags_null_condition
+      },
+
+      # ============================================================
+      # ECS: Require tags on cluster create
+      # (Task definition registration can be noisy; keep it out unless needed)
+      # ============================================================
+      {
+        Sid    = "ECSDenyCreateClusterWithoutRequiredTags"
+        Effect = "Deny"
+        Action = "ecs:CreateCluster"
+        Resource = "*"
+        Condition = local.required_tags_null_condition
+      },
+
+      # ============================================================
+      # EKS: Require tags on cluster/nodegroup create
+      # ============================================================
+      {
+        Sid    = "EKSDenyCreateClusterWithoutRequiredTags"
+        Effect = "Deny"
+        Action = "eks:CreateCluster"
+        Resource = "*"
+        Condition = local.required_tags_null_condition
+      },
+      {
+        Sid    = "EKSDenyCreateNodegroupWithoutRequiredTags"
+        Effect = "Deny"
+        Action = "eks:CreateNodegroup"
+        Resource = "*"
+        Condition = local.required_tags_null_condition
+      },
+
+      # ============================================================
+      # S3: Enforce tagging on buckets via PutBucketTagging
+      # (CreateBucket tag-on-create is inconsistent; this is safer)
+      # ============================================================
+      {
+        Sid    = "S3DenyPutBucketTaggingWithoutRequiredTags"
+        Effect = "Deny"
+        Action = "s3:PutBucketTagging"
+        Resource = "arn:aws:s3:::*"
+        Condition = local.required_tags_null_condition
       }
     ]
   })
 }
 
-resource "aws_organizations_policy_attachment" "attach_tagging_scp" {
-    policy_id = aws_organizations_policy.tagging_standards.id
-    target_id = var.scp_target_id
+resource "aws_iam_group" "developers" {
+  name = "developers"
+}
+
+resource "aws_iam_group_policy_attachment" "attach_require_standard_tags_daily" {
+  group      = aws_iam_group.developers.name
+  policy_arn = aws_iam_policy.require_standard_tags_daily.arn
 }
