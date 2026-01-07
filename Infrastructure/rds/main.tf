@@ -13,25 +13,6 @@ provider "aws" {
 }
 
 # -----------------------------
-# Variables
-# -----------------------------
-
-variable "environment" {
-  type    = string
-  default = "prod"
-}
-
-variable "db_name" {
-  type    = string
-  default = "appdb"
-}
-
-variable "master_username" {
-  type    = string
-  default = "dbadmin"
-}
-
-# -----------------------------
 # Locals
 # -----------------------------
 locals {
@@ -40,37 +21,6 @@ locals {
     Project     = "visionary-writings"
     Environment = var.environment
     ManagedBy   = "Terraform"
-  }
-}
-
-data "aws_vpc" "vw_vpc" {
-  filter {
-    name   = "tag:Name"
-    values = ["${local.name}-vpc"]
-  }
-}
-
-data "aws_subnets" "vw_private_subnets" {
-  filter {
-    name   = "tag:Name"
-    values = ["${local.name}-private-*"]
-  }
-
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.vw_vpc.id]
-  }
-}
-
-data "aws_security_group" "vw_security_group_db" {
-  filter {
-    name   = "tag:Name"
-    values = ["${local.name}-sg-db"]
-  }
-
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.vw_vpc.id]
   }
 }
 
@@ -90,7 +40,7 @@ resource "aws_rds_cluster_parameter_group" "aurora_mysql" {
 
 resource "aws_db_subnet_group" "rds_private" {
   name       = "${local.name}-rds-private-subnets"
-  subnet_ids = data.aws_subnets.vw_private_subnets.ids
+  subnet_ids = var.private_subnet_ids
 
   tags = merge(local.tags, { Name = "${local.name}-rds-subnet-group" })
 }
@@ -110,7 +60,7 @@ resource "aws_rds_cluster" "aurora" {
   port = 3306
 
   db_subnet_group_name   = aws_db_subnet_group.rds_private.name
-  vpc_security_group_ids = [data.aws_security_group.vw_security_group_db.id]
+  vpc_security_group_ids = var.rds_security_group_ids
 
   # Serverless v2 scaling config (ACUs)
   serverlessv2_scaling_configuration {
