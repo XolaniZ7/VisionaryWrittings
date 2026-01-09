@@ -38,7 +38,7 @@ jobs:
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::899824927281:role/Disraptor_Terraform_Resource_Provisioning_Role
+          role-to-assume: arn:aws:iam::724220526141:role/Disraptor_Terraform_Resource_Provisioning_Roleupdated
           role-session-name: github-actions-deploy
           aws-region: af-south-1
 
