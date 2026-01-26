@@ -3,7 +3,7 @@ name: Deploy dev Resources to AWS (Terraform Infrastructure)
 on:
   pull_request_target:
     types: [closed]
-    branches: ["dev_env"]
+    branches: ["staging"]
     paths:
       - "Infrastructure/**"
       - "dev/**"
