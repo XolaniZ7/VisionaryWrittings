@@ -33,7 +33,7 @@ jobs:
       - name: Checkout repo (main after merge)
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: staging
           fetch-depth: 0
 
       - name: Configure AWS credentials via OIDC
