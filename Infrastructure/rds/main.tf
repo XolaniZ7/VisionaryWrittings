@@ -12,6 +12,7 @@ locals {
 resource "aws_db_instance" "legal_ascend_db" {
   identifier = "visionary-writings-${var.environment}-db"
 
+  # MySQL
   engine         = "mysql"
   engine_version = var.mysql_engine_version
   port           = 3306
