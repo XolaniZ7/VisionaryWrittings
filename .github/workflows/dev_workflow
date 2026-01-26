@@ -1,9 +1,9 @@
-name: Deploy Staging Resources to AWS (Terraform Infrastructure)
+name: Deploy dev Resources to AWS (Terraform Infrastructure)
 
 on:
   pull_request_target:
     types: [closed]
-    branches: ["staging"]
+    branches: ["dev"]
     paths:
       - "Infrastructure/**"
       - "dev/**"
