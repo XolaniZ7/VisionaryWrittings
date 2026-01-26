@@ -1,56 +1,57 @@
 # -----------------------------
-# Aurora Cluster Outputs
+# RDS Instance Outputs
 # -----------------------------
 
-output "aurora_cluster_id" {
-  description = "ID of the Aurora MySQL cluster."
-  value       = aws_rds_cluster.aurora.id
+output "rds_instance_id" {
+  description = "ID of the SQL Server RDS instance."
+  value       = aws_db_instance.legal_ascend_db.id
 }
 
-output "aurora_cluster_arn" {
-  description = "ARN of the Aurora MySQL cluster."
-  value       = aws_rds_cluster.aurora.arn
+output "rds_instance_arn" {
+  description = "ARN of the SQL Server RDS instance."
+  value       = aws_db_instance.legal_ascend_db.arn
 }
 
-output "aurora_endpoint_writer" {
-  description = "Writer endpoint for the Aurora MySQL cluster."
-  value       = aws_rds_cluster.aurora.endpoint
+output "rds_instance_identifier" {
+  description = "Identifier of the SQL Server RDS instance."
+  value       = aws_db_instance.legal_ascend_db.identifier
 }
 
-output "aurora_endpoint_reader" {
-  description = "Reader endpoint for the Aurora MySQL cluster."
-  value       = aws_rds_cluster.aurora.reader_endpoint
+output "rds_engine" {
+  description = "Database engine used by the RDS instance."
+  value       = aws_db_instance.legal_ascend_db.engine
 }
 
-output "aurora_port" {
-  description = "Port on which the Aurora MySQL cluster listens."
-  value       = aws_rds_cluster.aurora.port
+output "rds_engine_version" {
+  description = "Database engine version used by the RDS instance."
+  value       = aws_db_instance.legal_ascend_db.engine_version
+}
+
+output "rds_endpoint" {
+  description = "Connection endpoint for the SQL Server RDS instance."
+  value       = aws_db_instance.legal_ascend_db.endpoint
+}
+
+output "rds_port" {
+  description = "Port on which the SQL Server RDS instance listens."
+  value       = aws_db_instance.legal_ascend_db.port
 }
 
 # -----------------------------
-# Subnet Group Outputs
+# Networking Outputs
 # -----------------------------
 
 output "rds_subnet_group_name" {
-  description = "Name of the DB subnet group used by the Aurora cluster."
+  description = "Name of the DB subnet group associated with the RDS instance."
   value       = aws_db_subnet_group.rds_private.name
 }
 
 output "rds_subnet_group_id" {
-  description = "ID of the DB subnet group used by the Aurora cluster."
+  description = "ID of the DB subnet group associated with the RDS instance."
   value       = aws_db_subnet_group.rds_private.id
 }
 
-# -----------------------------
-# Instance Outputs
-# -----------------------------
-
-output "aurora_writer_instance_id" {
-  description = "Identifier of the primary (writer) Aurora instance."
-  value       = aws_rds_cluster_instance.writer.id
-}
-
-output "aurora_reader_instance_ids" {
-  description = "Identifiers of the Aurora reader instances."
-  value       = aws_rds_cluster_instance.reader[*].id
+output "rds_security_group_ids" {
+  description = "Security group IDs attached to the RDS instance."
+  value       = aws_db_instance.legal_ascend_db.vpc_security_group_ids
 }

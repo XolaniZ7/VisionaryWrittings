@@ -9,13 +9,14 @@ on:
       - "main"
     paths:
       - "Infrastructure/**"
+      - "prod/**"
 
 permissions:
   id-token: write # REQUIRED for OIDC
   contents: read # Needed to checkout the repo
 
 env:
-  TF_WORKING_DIR: ./Infrastructure
+  TF_WORKING_DIR: ./prod
 
 jobs:
   not-merged:
