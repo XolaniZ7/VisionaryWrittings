@@ -161,7 +161,7 @@ resource "aws_iam_policy" "require_standard_tags_daily" {
 }
 
 resource "aws_iam_group" "developers" {
-  name = "developers"
+  name = "tagging_standards_enforced"
 }
 
 resource "aws_iam_group_policy_attachment" "attach_require_standard_tags_daily" {
