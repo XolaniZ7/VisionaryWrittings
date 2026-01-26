@@ -1,9 +1,9 @@
-name: Deploy Infrastructure to AWS (Terraform Infrastructure)
+name: Deploy Prod Resources to AWS (Terraform Infrastructure)
 
 on:
   pull_request_target:
     types: [closed]
-    branches: ["staging"]
+    branches: ["main"]
     paths:
       - "Infrastructure/**"
       - "prod/**"
@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: terraform-infra-staging
+  group: terraform-infra-main
   cancel-in-progress: false
 
 env:
@@ -30,10 +30,10 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo (staging after merge)
+      - name: Checkout repo (main after merge)
         uses: actions/checkout@v4
         with:
-          ref: staging
+          ref: main
           fetch-depth: 0
 
       - name: Configure AWS credentials via OIDC

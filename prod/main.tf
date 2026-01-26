@@ -21,3 +21,4 @@ module "rds" {
   db_subnet_group_name = module.vpc.rds_subnet_group_name
   environment = "prod"
 }
+
