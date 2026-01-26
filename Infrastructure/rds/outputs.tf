@@ -41,17 +41,17 @@ output "rds_port" {
 # Networking Outputs
 # -----------------------------
 
-output "rds_subnet_group_name" {
-  description = "Name of the DB subnet group associated with the RDS instance."
-  value       = aws_db_subnet_group.rds_private.name
-}
+# output "rds_subnet_group_name" {
+#   description = "Name of the DB subnet group associated with the RDS instance."
+#   value       = aws_db_subnet_group.rds_private.name
+# }
 
-output "rds_subnet_group_id" {
-  description = "ID of the DB subnet group associated with the RDS instance."
-  value       = aws_db_subnet_group.rds_private.id
-}
+# output "rds_subnet_group_id" {
+#   description = "ID of the DB subnet group associated with the RDS instance."
+#   value       = aws_db_subnet_group.rds_private.id
+# }
 
-output "rds_security_group_ids" {
-  description = "Security group IDs attached to the RDS instance."
-  value       = aws_db_instance.legal_ascend_db.vpc_security_group_ids
-}
+# output "rds_security_group_ids" {
+#   description = "Security group IDs attached to the RDS instance."
+#   value       = aws_db_instance.legal_ascend_db.vpc_security_group_ids
+# }
