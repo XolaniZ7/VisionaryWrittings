@@ -12,6 +12,7 @@ provider "aws" {
 
 module "vpc" {
   source = "../Infrastructure/vpc"
+  vpc_cidr = "10.40.0.0/16"
 }
 
 module "rds" {
