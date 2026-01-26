@@ -23,5 +23,3 @@ module "rds" {
   environment            = "dev"
   instance_class = "db.t3.micro"
 }
-
- 
