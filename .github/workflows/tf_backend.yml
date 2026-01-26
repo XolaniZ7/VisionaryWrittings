@@ -1,12 +1,11 @@
-name: Deploy dev Resources to AWS (Terraform Infrastructure)
+name: Deploy Backend S3 & Dynamo DB (Terraform Infrastructure)
 
 on:
   pull_request_target:
     types: [closed]
-    branches: ["dev_env"]
+    branches: ["main"]
     paths:
-      - "Infrastructure/**"
-      - "dev/**"
+      - "backend/**"
 
 permissions:
   id-token: write
@@ -17,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  TF_WORKING_DIR: ./dev
+  TF_WORKING_DIR: ./backend
 
 jobs:
   not-merged:
@@ -33,7 +32,7 @@ jobs:
       - name: Checkout repo (main after merge)
         uses: actions/checkout@v4
         with:
-          ref: staging
+          ref: main
           fetch-depth: 0
 
       - name: Configure AWS credentials via OIDC
