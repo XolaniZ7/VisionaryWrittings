@@ -3,7 +3,7 @@ name: Deploy Infrastructure to AWS (Terraform Infrastructure)
 on:
   pull_request_target:
     types: [closed]
-    branches: ["staging"]
+    branches: ["main"]
     paths:
       - "Infrastructure/**"
       - "prod/**"
@@ -33,7 +33,7 @@ jobs:
       - name: Checkout repo (staging after merge)
         uses: actions/checkout@v4
         with:
-          ref: staging
+          ref: main
           fetch-depth: 0
 
       - name: Configure AWS credentials via OIDC
