@@ -2,14 +2,6 @@ provider "aws" {
   region = var.aws_region
 }
 
-# module "iam_roles" {
-#   source = "../Infrastructure/iam_roles"
-# }
-
-# module "tagging_standards" {
-#   source = "../Infrastructure/tagging_standards"
-# }
-
 module "vpc" {
   source = "../Infrastructure/vpc"
   vpc_cidr = "10.40.0.0/16"
