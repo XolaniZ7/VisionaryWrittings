@@ -180,7 +180,7 @@ resource "aws_security_group_rule" "db_ingress_from_ec2" {
 # RDS Subnet Group (PRIVATE ONLY)
 # ----------------------------
 resource "aws_db_subnet_group" "rds_private" {
-  name       = "${local.name}-rds-private-subnets"
+  name       = "${var.env}-${local.name}-rds-private-subnets"
   subnet_ids = aws_subnet.private[*].id
 
   tags = merge(local.tags, { Name = "${local.name}-rds-subnet-group" })
