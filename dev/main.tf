@@ -16,4 +16,8 @@ module "rds" {
   instance_class               = "db.t3.micro"
   performance_insights_enabled = false
 }
- 
+
+module "s3" {
+  source      = "../Infrastructure/s3"
+  environment = "dev"
+}
