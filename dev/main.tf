@@ -2,6 +2,10 @@ provider "aws" {
   region = var.aws_region
 }
 
+module "s3_user" {
+  source = "../Infrastructure/s3-user"
+}
+
 module "vpc" {
   source   = "../Infrastructure/vpc"
   vpc_cidr = "10.40.0.0/16"
