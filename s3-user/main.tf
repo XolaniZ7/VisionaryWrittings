@@ -66,5 +66,4 @@ output "migration_access_key_id" {
 # WARNING: This is sensitive. It will be stored in terraform state.
 output "migration_secret_access_key" {
   value     = aws_iam_access_key.migration_key.secret
-  sensitive = true
 }
