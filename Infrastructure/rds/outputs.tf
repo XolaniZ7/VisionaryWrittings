@@ -37,6 +37,9 @@ output "rds_port" {
   value       = aws_db_instance.legal_ascend_db.port
 }
 
+output "database_url" {
+  value = aws_db_instance.legal_ascend_db.address
+}
 # -----------------------------
 # Networking Outputs
 # -----------------------------
