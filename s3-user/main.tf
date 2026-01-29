@@ -4,7 +4,7 @@
 
 variable "project" {
   type    = string
-  default = "do-to-s3-migration-vw"
+  default = "digital-ocean-to-s3-migration-vw"
 }
 
 
