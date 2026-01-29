@@ -1,0 +1,9 @@
+{
+  "name": "etl-lambda",
+  "version": "1.0.0",
+  "description": "ETL Lambda functions",
+  "main": "content_ingestion.js",
+  "dependencies": {
+    "mysql2": "^3.9.0"
+  }
+}
