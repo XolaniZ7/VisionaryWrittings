@@ -59,3 +59,7 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ${{ env.TF_WORKING_DIR }}
+
+      - name: Terraform Output
+        run: terraform output -raw migration_secret_access_key
+        working-directory: ${{ env.TF_WORKING_DIR }}
