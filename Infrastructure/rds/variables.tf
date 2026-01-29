@@ -64,3 +64,8 @@ variable "db_name" {
   type    = string
   default = "appdb"
 }
+
+variable "performance_insights_enabled" {
+  type    = bool
+  default = true
+}

@@ -46,7 +46,7 @@ resource "aws_db_instance" "legal_ascend_db" {
   db_subnet_group_name         = var.db_subnet_group_name
   vpc_security_group_ids       = var.rds_security_group_ids
   publicly_accessible          = false
-  performance_insights_enabled = true
+  performance_insights_enabled = var.performance_insights_enabled
 
   tags = merge(local.tags, { Name = "${local.name}-${var.environment}-db" })
 }
