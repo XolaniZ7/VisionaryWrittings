@@ -42,3 +42,4 @@ module "lambda_etl" {
   database_url          = module.rds.database_url
   rds_security_group_id = module.vpc.db_security_group_id
 }
+ 
