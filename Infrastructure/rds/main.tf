@@ -43,10 +43,20 @@ resource "aws_db_instance" "legal_ascend_db" {
   final_snapshot_identifier = "visionary-writings-${var.environment}-final"
 
   # Networking / security
-  db_subnet_group_name         = var.db_subnet_group_name
+  db_subnet_group_name         = aws_db_subnet_group.rds_private.name
   vpc_security_group_ids       = var.rds_security_group_ids
   publicly_accessible          = false
   performance_insights_enabled = var.performance_insights_enabled
 
   tags = merge(local.tags, { Name = "${local.name}-${var.environment}-db" })
+}
+
+# ----------------------------
+# RDS Subnet Group (PRIVATE ONLY)
+# ----------------------------
+resource "aws_db_subnet_group" "rds_private" {
+  name       = "${var.environment}-${local.name}-rds-private-subnets"
+  subnet_ids = var.private_subnet_ids
+
+  tags = merge(local.tags, { Name = "${local.name}-rds-subnet-group" })
 }
