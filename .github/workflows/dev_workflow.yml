@@ -57,10 +57,6 @@ jobs:
         run: terraform plan
         working-directory: ${{ env.TF_WORKING_DIR }}
 
-      - name: Destroy VPC + RDS only (keep S3)
-        run: terraform destroy -auto-approve -target=module.rds -target=module.vpc
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
         working-directory: ${{ env.TF_WORKING_DIR }}
-
-      # - name: Terraform Apply
-      #   run: terraform apply -auto-approve
-      #   working-directory: ${{ env.TF_WORKING_DIR }}
