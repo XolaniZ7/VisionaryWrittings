@@ -4,39 +4,42 @@
 
 output "rds_instance_id" {
   description = "ID of the SQL Server RDS instance."
-  value       = aws_db_instance.legal_ascend_db.id
+  value       = aws_db_instance.vw_db.id
 }
 
 output "rds_instance_arn" {
   description = "ARN of the SQL Server RDS instance."
-  value       = aws_db_instance.legal_ascend_db.arn
+  value       = aws_db_instance.vw_db.arn
 }
 
 output "rds_instance_identifier" {
   description = "Identifier of the SQL Server RDS instance."
-  value       = aws_db_instance.legal_ascend_db.identifier
+  value       = aws_db_instance.vw_db.identifier
 }
 
 output "rds_engine" {
   description = "Database engine used by the RDS instance."
-  value       = aws_db_instance.legal_ascend_db.engine
+  value       = aws_db_instance.vw_db.engine
 }
 
 output "rds_engine_version" {
   description = "Database engine version used by the RDS instance."
-  value       = aws_db_instance.legal_ascend_db.engine_version
+  value       = aws_db_instance.vw_db.engine_version
 }
 
 output "rds_endpoint" {
   description = "Connection endpoint for the SQL Server RDS instance."
-  value       = aws_db_instance.legal_ascend_db.endpoint
+  value       = aws_db_instance.vw_db.endpoint
 }
 
 output "rds_port" {
   description = "Port on which the SQL Server RDS instance listens."
-  value       = aws_db_instance.legal_ascend_db.port
+  value       = aws_db_instance.vw_db.port
 }
 
+output "database_url" {
+  value = aws_db_instance.vw_db.address
+}
 # -----------------------------
 # Networking Outputs
 # -----------------------------
@@ -53,5 +56,5 @@ output "rds_port" {
 
 # output "rds_security_group_ids" {
 #   description = "Security group IDs attached to the RDS instance."
-#   value       = aws_db_instance.legal_ascend_db.vpc_security_group_ids
+#   value       = aws_db_instance.vw_db.vpc_security_group_ids
 # }
