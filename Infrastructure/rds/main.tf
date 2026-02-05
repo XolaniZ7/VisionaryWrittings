@@ -9,7 +9,7 @@ locals {
   }
 }
 
-resource "aws_db_instance" "legal_ascend_db" {
+resource "aws_db_instance" "vw_db" {
   identifier = "visionary-writings-${var.environment}-db"
 
   # MySQL

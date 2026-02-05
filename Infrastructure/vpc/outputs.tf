@@ -73,12 +73,12 @@ output "db_security_group_id" {
 # RDS Outputs
 # ----------------------------
 
-output "rds_subnet_group_name" {
-  description = "Name of the DB subnet group containing only private subnets for RDS/Aurora."
-  value       = aws_db_subnet_group.rds_private.name
-}
+# output "rds_subnet_group_name" {
+#   description = "Name of the DB subnet group containing only private subnets for RDS/Aurora."
+#   value       = aws_db_subnet_group.rds_private.name
+# }
 
-output "rds_subnet_group_id" {
-  description = "ID of the DB subnet group used for private RDS/Aurora deployments."
-  value       = aws_db_subnet_group.rds_private.id
-}
+# output "rds_subnet_group_id" {
+#   description = "ID of the DB subnet group used for private RDS/Aurora deployments."
+#   value       = aws_db_subnet_group.rds_private.id
+# }
