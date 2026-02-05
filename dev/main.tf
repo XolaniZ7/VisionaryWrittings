@@ -12,9 +12,9 @@ module "vpc" {
 }
 
 module "rds" {
-  source                       = "../Infrastructure/rds"
-  private_subnet_ids           = module.vpc.private_subnet_ids
-  rds_security_group_ids       = [module.vpc.db_security_group_id]
+  source                 = "../Infrastructure/rds"
+  private_subnet_ids     = module.vpc.private_subnet_ids
+  rds_security_group_ids = [module.vpc.db_security_group_id]
   # db_subnet_group_name         = module.vpc.rds_subnet_group_name
   environment                  = "dev"
   instance_class               = "db.t3.micro"
@@ -32,13 +32,13 @@ module "app_transfer" {
   project     = "telkom-ai-visionary-writings"
 }
 
-# module "lambda_etl" {
-#   source                = "../Infrastructure/ETL"
-#   project               = "telkom-ai-visionary-writings"
-#   environment           = "dev"
-#   vpc_id                = module.vpc.vpc_id
-#   private_subnet_ids    = module.vpc.private_subnet_ids
-#   database_url          = module.rds.database_url
-#   rds_security_group_id = module.vpc.db_security_group_id
-# }
+module "lambda_etl" {
+  source                = "../Infrastructure/ETL"
+  project               = "telkom-ai-visionary-writings"
+  environment           = "dev"
+  vpc_id                = module.vpc.vpc_id
+  private_subnet_ids    = module.vpc.private_subnet_ids
+  database_url          = module.rds.database_url
+  rds_security_group_id = module.vpc.db_security_group_id
+}
     
