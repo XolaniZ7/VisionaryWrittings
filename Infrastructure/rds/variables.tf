@@ -45,10 +45,10 @@ variable "backup_retention_period" {
   default = 7
 }
 
-variable "db_subnet_group_name" {
-  description = "The name of the DB subnet group to use for the RDS instance."
-  type        = string
-}
+# variable "db_subnet_group_name" {
+#   description = "The name of the DB subnet group to use for the RDS instance."
+#   type        = string
+# }
 
 variable "mysql_engine_version" {
   type    = string
