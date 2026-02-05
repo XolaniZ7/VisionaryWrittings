@@ -57,7 +57,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = merge(local.tags, {
-    Name = "${local.name}-public-${count.index + 1}"
+    Name = "${var.env}-${local.name}-public-${count.index + 1}"
     Tier = "public"
   })
 }
@@ -69,7 +69,7 @@ resource "aws_subnet" "private" {
   cidr_block        = cidrsubnet(var.vpc_cidr, 8, count.index + 10)
 
   tags = merge(local.tags, {
-    Name = "${local.name}-private-${count.index + 1}"
+    Name = "${var.env}-${local.name}-private-${count.index + 1}"
     Tier = "private"
   })
 }
@@ -79,7 +79,7 @@ resource "aws_subnet" "private" {
 # ----------------------------
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.vw_vpc.id
-  tags   = merge(local.tags, { Name = "${local.name}-rt-public" })
+  tags   = merge(local.tags, { Name = "${var.env}-${local.name}-rt-public" })
 }
 
 resource "aws_route" "public_default" {
@@ -99,7 +99,7 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.vw_vpc.id
 
   tags = merge(local.tags, {
-    Name = "${local.name}-rt-private"
+    Name = "${var.env}-${local.name}-rt-private"
   })
 }
 
@@ -115,7 +115,7 @@ resource "aws_route_table_association" "private" {
 
 # ECS tasks SG (attach this to ECS services/tasks)
 resource "aws_security_group" "ecs" {
-  name        = "${local.name}-sg-ecs"
+  name        = "${var.env}-${local.name}-sg-ecs"
   description = "ECS tasks/services SG"
   vpc_id      = aws_vpc.vw_vpc.id
 
@@ -126,12 +126,12 @@ resource "aws_security_group" "ecs" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge(local.tags, { Name = "${local.name}-sg-ecs" })
+  tags = merge(local.tags, { Name = "${var.env}-${local.name}-sg-ecs" })
 }
 
 # EC2 SG (attach to EC2 instances that must access DB)
 resource "aws_security_group" "ec2" {
-  name        = "${local.name}-sg-ec2"
+  name        = "${var.env}-${local.name}-sg-ec2"
   description = "EC2 app/bastion SG (for DB access)"
   vpc_id      = aws_vpc.vw_vpc.id
 
@@ -142,7 +142,7 @@ resource "aws_security_group" "ec2" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge(local.tags, { Name = "${local.name}-sg-ec2" })
+  tags = merge(local.tags, { Name = "${var.env}-${local.name}-sg-ec2" })
 }
 
 # DB SG
@@ -176,12 +176,68 @@ resource "aws_security_group_rule" "db_ingress_from_ec2" {
   description              = "Allow MySQL from EC2 SG"
 }
 
-# ----------------------------
-# RDS Subnet Group (PRIVATE ONLY)
-# ----------------------------
-resource "aws_db_subnet_group" "rds_private" {
-  name       = "${var.env}-${local.name}-rds-private-subnets"
-  subnet_ids = aws_subnet.private[*].id
+# Frontend EC2 SG
+resource "aws_security_group" "frontend_ec2" {
+  name        = "${var.env}-${local.name}-sg-frontend-ec2"
+  description = "Frontend EC2 SG (needs DB access)"
+  vpc_id      = aws_vpc.vw_vpc.id
 
-  tags = merge(local.tags, { Name = "${local.name}-rds-subnet-group" })
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(local.tags, { Name = "${local.name}-sg-frontend-ec2" })
 }
+
+# Admin/Bastion EC2 SG
+resource "aws_security_group" "admin_ec2" {
+  name        = "${var.env}-${local.name}-sg-admin-ec2"
+  description = "Admin/Bastion EC2 SG (DB access)"
+  vpc_id      = aws_vpc.vw_vpc.id
+
+  # optional: restrict SSH
+  ingress {
+    description = "SSH from my IP"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # e.g. "x.x.x.x/32"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(local.tags, { Name = "${local.name}-sg-admin-ec2" })
+}
+
+# Allow MySQL from Frontend EC2
+resource "aws_security_group_rule" "db_ingress_from_frontend_ec2" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.db.id
+  from_port                = 3306
+  to_port                  = 3306
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.frontend_ec2.id
+  description              = "Allow MySQL from Frontend EC2"
+}
+
+# Allow MySQL from Admin/Bastion EC2
+resource "aws_security_group_rule" "db_ingress_from_admin_ec2" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.db.id
+  from_port                = 3306
+  to_port                  = 3306
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.admin_ec2.id
+  description              = "Allow MySQL from Admin/Bastion EC2"
+}
+
+# Keep ECS as optional (you already have this)
+# aws_security_group_rule.db_ingress_from_ecs stays
