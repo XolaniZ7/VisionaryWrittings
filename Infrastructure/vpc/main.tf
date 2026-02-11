@@ -75,6 +75,26 @@ resource "aws_subnet" "private" {
 }
 
 # ----------------------------
+# Nat Gateway
+# ----------------------------
+
+resource "aws_eip" "nat" {
+  domain = "vpc"
+}
+
+# NAT in public[0]
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public[0].id
+  depends_on    = [aws_internet_gateway.vw_igw]
+  tags          = merge(local.tags, { Name = "${var.env}-${local.name}-nat" })
+}
+
+# ----------------------------
+# Nat Gateway Ends
+# ----------------------------
+
+# ----------------------------
 # Route tables
 # ----------------------------
 resource "aws_route_table" "public" {
@@ -107,6 +127,14 @@ resource "aws_route_table_association" "private" {
   count          = length(local.azs)
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[0].id
+}
+
+# Both private route tables point to the same NAT
+resource "aws_route" "private_default" {
+  count                  = length(local.azs)
+  route_table_id         = aws_route_table.private[count.index].id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat.id
 }
 
 # ----------------------------
