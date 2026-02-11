@@ -80,6 +80,7 @@ resource "aws_subnet" "private" {
 
 resource "aws_eip" "nat" {
   domain = "vpc"
+  tags = merge(local.tags, { Name = "${var.env}-${local.name}-nat-eip" })
 }
 
 # NAT in public[0]
