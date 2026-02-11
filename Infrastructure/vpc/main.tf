@@ -78,6 +78,10 @@ resource "aws_subnet" "private" {
 # Nat Gateway
 # ----------------------------
 
+resource "aws_eip" "nat" {
+  domain = "vpc"
+}
+
 # NAT in public[0]
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat.id
