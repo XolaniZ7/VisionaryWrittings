@@ -80,7 +80,7 @@ resource "aws_subnet" "private" {
 
 resource "aws_eip" "nat" {
   domain = "vpc"
-  tags = merge(local.tags, { Name = "${var.env}-${local.name}-nat-eip" })
+  tags   = merge(local.tags, { Name = "${var.env}-${local.name}-nat-eip" })
 }
 
 # NAT in public[0]
@@ -289,4 +289,14 @@ resource "aws_security_group" "dms" {
   }
 
   tags = merge(local.tags, { Name = "${var.env}-${local.name}-sg-dms" })
+}
+
+resource "aws_security_group_rule" "db_ingress_from_dms" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.db.id
+  from_port                = 3306
+  to_port                  = 3306
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.dms.id
+  description              = "Allow MySQL from DMS replication instance SG"
 }
