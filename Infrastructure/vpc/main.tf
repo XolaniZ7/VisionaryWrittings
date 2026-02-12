@@ -270,3 +270,23 @@ resource "aws_security_group_rule" "db_ingress_from_admin_ec2" {
 
 # Keep ECS as optional (you already have this)
 # aws_security_group_rule.db_ingress_from_ecs stays
+
+
+# DMS SG (if needed for DMS replication tasks)
+resource "aws_security_group" "dms" {
+  name        = "${var.env}-${local.name}-sg-dms"
+  description = "AWS DMS replication instance SG"
+  vpc_id      = aws_vpc.vw_vpc.id
+
+  # DMS usually doesn't need inbound rules
+
+  egress {
+    description = "Outbound to MySQL endpoints (source/target)"
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(local.tags, { Name = "${var.env}-${local.name}-sg-dms" })
+}
