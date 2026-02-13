@@ -281,11 +281,17 @@ resource "aws_security_group" "dms" {
 
   # DMS usually doesn't need inbound rules
 
+  # egress {
+  #   description = "Outbound to MySQL endpoints (source/target)"
+  #   from_port   = 3306
+  #   to_port     = 3306
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
   egress {
-    description = "Outbound to MySQL endpoints (source/target)"
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
