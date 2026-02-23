@@ -8,8 +8,7 @@ on:
       - "backend/**"
 
 permissions:
-  id-token: write
-  contents: read
+  contents: read # Required for actions/checkout to fetch code
 
 concurrency:
   group: terraform-infra-main
@@ -35,11 +34,11 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Configure AWS credentials via OIDC
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::724220526141:role/Disraptor_Terraform_Resource_Provisioning_Roleupdated
-          role-session-name: github-actions-deploy
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: af-south-1
 
       - name: WhoAmI in AWS
@@ -59,4 +58,3 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ${{ env.TF_WORKING_DIR }}
-# jskdjvns
