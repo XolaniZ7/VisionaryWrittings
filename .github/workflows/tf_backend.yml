@@ -8,7 +8,7 @@ on:
       - "backend/**"
 
 permissions:
-  contents: read
+  contents: read # Required for actions/checkout to fetch code
 
 concurrency:
   group: terraform-infra-main
@@ -59,3 +59,4 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
+        working-directory: ${{ env.TF_WORKING_DIR }}

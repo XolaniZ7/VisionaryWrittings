@@ -9,7 +9,7 @@ on:
       - "dev/**"
 
 permissions:
-  contents: read
+  contents: read # Required for actions/checkout to fetch code
 
 concurrency:
   group: terraform-infra-dev
