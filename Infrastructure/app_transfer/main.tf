@@ -1,9 +1,9 @@
 # S3 bucket for app deployment
 resource "aws_s3_bucket" "app_transfer" {
-  bucket        = "${var.environment}-${var.project}-app-transfer-bucket"
+  bucket        = "${var.environment}-${var.project}-app-transfer-bucket4"
   force_destroy = true
   tags = {
-    Name        = "${var.environment}-${var.project}-app-transfer-bucket"
+    Name        = "${var.environment}-${var.project}-app-transfer-bucket4"
     Project     = var.project
     Environment = var.environment
     ManagedBy   = "Terraform"

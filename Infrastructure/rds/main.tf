@@ -24,8 +24,8 @@ resource "aws_db_instance" "vw_db" {
   multi_az              = false
 
   # DB settings
-  username                    = "admin"
-  manage_master_user_password = true
+  username = var.db_username
+  password = var.db_password
   # optional: if you want a default database created
   db_name = var.db_name
 

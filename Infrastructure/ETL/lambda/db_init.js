@@ -13,32 +13,21 @@ exports.handler = async (event) => {
             CREATE TABLE IF NOT EXISTS content_uploads (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 filename VARCHAR(255) NOT NULL,
-                size INT,
-                content_type VARCHAR(50),
+                size BIGINT,
+                content_type VARCHAR(100),
                 upload_date DATETIME,
                 preview TEXT,
-                word_count INT,
-                reading_time INT,
+                metadata JSON,
                 processed BOOLEAN DEFAULT FALSE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
+                processed_date DATETIME,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_processed (processed),
+                INDEX idx_upload_date (upload_date)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `;
 
         await connection.execute(createTableQuery);
-
-        // Attempt to add the column for existing tables
-        try {
-            await connection.execute("ALTER TABLE content_uploads ADD COLUMN processed BOOLEAN DEFAULT FALSE");
-            console.log("Column 'processed' added to content_uploads.");
-        } catch (alterError) {
-            // Ignore error if column already exists (Error 1060)
-            if (alterError.errno !== 1060) {
-                console.warn("Warning: Could not alter table:", alterError.message);
-            } else {
-                console.log("Column 'processed' already exists.");
-            }
-        }
-        console.log("Table 'content_uploads' ensured.");
+        console.log("Table 'content_uploads' ensured with unified schema.");
 
         return { statusCode: 200, body: "Initialization successful" };
     } catch (error) {
