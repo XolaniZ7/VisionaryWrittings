@@ -27,6 +27,7 @@ jobs:
   terraform:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo (main after merge)
         uses: actions/checkout@v4
@@ -34,6 +35,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      # ✅ Using Access Keys Instead of OIDC
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
