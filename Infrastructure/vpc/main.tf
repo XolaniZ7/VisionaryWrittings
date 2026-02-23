@@ -125,9 +125,10 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "private" {
-  count          = length(local.azs)
-  subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private[0].id
+  count     = length(local.azs)
+  subnet_id = aws_subnet.private[count.index].id
+  # route_table_id = aws_route_table.private[0].id
+  route_table_id = aws_route_table.private[count.index].id
 }
 
 # Both private route tables point to the same NAT
@@ -280,11 +281,17 @@ resource "aws_security_group" "dms" {
 
   # DMS usually doesn't need inbound rules
 
+  # egress {
+  #   description = "Outbound to MySQL endpoints (source/target)"
+  #   from_port   = 3306
+  #   to_port     = 3306
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
   egress {
-    description = "Outbound to MySQL endpoints (source/target)"
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 

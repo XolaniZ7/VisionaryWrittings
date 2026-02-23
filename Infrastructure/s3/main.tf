@@ -1,9 +1,9 @@
 locals {
   bucket_prefix = "${var.project}-${var.environment}"
 
-  assets_bucket_name  = "${local.bucket_prefix}-assets"
-  logs_bucket_name    = "${local.bucket_prefix}-logs"
-  backups_bucket_name = "${local.bucket_prefix}-backups"
+  assets_bucket_name  = "${local.bucket_prefix}-assets4"
+  logs_bucket_name    = "${local.bucket_prefix}-logs4"
+  backups_bucket_name = "${local.bucket_prefix}-backups4"
 
   common_tags = {
     Project     = var.project
